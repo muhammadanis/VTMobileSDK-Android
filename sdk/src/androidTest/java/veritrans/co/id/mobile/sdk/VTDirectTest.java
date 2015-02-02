@@ -1,9 +1,11 @@
 package veritrans.co.id.mobile.sdk;
 
 import android.test.InstrumentationTestCase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import id.co.veritrans.android.api.VTDirect;
 import id.co.veritrans.android.api.VTInterface.ITokenCallback;
@@ -57,7 +59,8 @@ public class VTDirectTest extends InstrumentationTestCase {
         });
     }
 
-    public void testCharging(){
+    public void testCharging() throws InterruptedException {
+        final CountDownLatch signal = new CountDownLatch(1);
         VTCardDetails cardDetails = CardFactory(false);
         VTDirect vtDirect = new VTDirect();
         vtDirect.setCard_details(cardDetails);
@@ -71,7 +74,7 @@ public class VTDirectTest extends InstrumentationTestCase {
                 //create product
                 VTProduct vtProduct = new VTProduct();
                 vtProduct.setId("23aa44");
-                vtProduct.setPrice(50000);
+                vtProduct.setPrice(42500);
                 vtProduct.setQuantity(2);
 
                 //create tokendata
@@ -95,13 +98,18 @@ public class VTDirectTest extends InstrumentationTestCase {
 
                     @Override
                     public void onSuccess(VTChargeResponse data) {
+                        Log.d(VTConstants.SDK_TAG,"success charging");
                         logger.Log("Success charge " + data.toString(), VTLogger.LogLevel.DEBUG);
+                        logger.Log("Trx id: "+data.getTransaction_id(), VTLogger.LogLevel.DEBUG);
+                        assertNotNull(data);
+                        signal.countDown();
                     }
 
                     @Override
                     public void onError(VTMobileException error) {
                         logger.Log("Failed to Charge " + error.getRawMessage(), VTLogger.LogLevel.ERROR);
                         assertFalse(true);
+                        signal.countDown();
                     }
                 }, chargeRequest);
             }
@@ -109,10 +117,11 @@ public class VTDirectTest extends InstrumentationTestCase {
             @Override
             public void onError(Exception e) {
                 logger.Log("Failed to get token", VTLogger.LogLevel.ERROR);
+                assertFalse(true);
             }
         });
 
-
+        signal.await();
 
 
     }
