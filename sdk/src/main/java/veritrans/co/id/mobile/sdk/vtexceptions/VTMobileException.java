@@ -1,6 +1,6 @@
 package veritrans.co.id.mobile.sdk.vtexceptions;
 
-import veritrans.co.id.mobile.sdk.helper.Strings;
+import veritrans.co.id.mobile.sdk.helper.VTStrings;
 
 /**
  * Created by muhammadanis on 1/29/15.
@@ -14,22 +14,22 @@ public class VTMobileException extends Exception{
     protected Exception e;
 
     public VTMobileException(String s){
-        super(Strings.GENERAL_ERROR);
+        super(VTStrings.GENERAL_ERROR);
         this.e = new Exception("Unknown Exception");
     }
 
     public VTMobileException(Exception e){
-        super(Strings.GENERAL_ERROR);
+        super(VTStrings.GENERAL_ERROR);
         this.e = e;
     }
 
     public VTMobileException(String s, Exception e){
-        super(Strings.GENERAL_ERROR);
+        super(VTStrings.GENERAL_ERROR);
         this.e = e;
     }
 
     public VTMobileException(String s, Throwable t, Exception e){
-        super(Strings.GENERAL_ERROR,t);
+        super(VTStrings.GENERAL_ERROR,t);
         this.e = e;
     }
 

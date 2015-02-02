@@ -1,6 +1,6 @@
 package veritrans.co.id.mobile.sdk.vtexceptions;
 
-import veritrans.co.id.mobile.sdk.helper.Strings;
+import veritrans.co.id.mobile.sdk.helper.VTStrings;
 
 /**
  * Created by muhammadanis on 1/30/15.
@@ -8,6 +8,6 @@ import veritrans.co.id.mobile.sdk.helper.Strings;
 public class VTConnectionException extends VTMobileException{
 
     public VTConnectionException(Exception e){
-        super(Strings.CONNECTION_EXCEPTION,e);
+        super(VTStrings.CONNECTION_EXCEPTION,e);
     }
 }

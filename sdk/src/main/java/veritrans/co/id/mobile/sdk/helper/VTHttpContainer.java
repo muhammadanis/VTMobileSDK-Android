@@ -14,18 +14,21 @@ public class VTHttpContainer {
         POST
     }
 
-    private List<NameValuePair> payload;
+    private String payload;
     private VTHttpMethod httpMethod;
+    private String contentType;
+    private String accept;
 
     public VTHttpContainer(){
-
+        contentType = "application/json";
+        accept = "application/json";
     }
 
-    public List<NameValuePair> getPayload() {
+    public String getPayload() {
         return payload;
     }
 
-    public void setPayload(List<NameValuePair> payload) {
+    public void setPayload(String payload) {
         this.payload = payload;
     }
 
@@ -35,5 +38,21 @@ public class VTHttpContainer {
 
     public void setHttpMethod(VTHttpMethod httpMethod) {
         this.httpMethod = httpMethod;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getAccept() {
+        return accept;
+    }
+
+    public void setAccept(String accept) {
+        this.accept = accept;
     }
 }

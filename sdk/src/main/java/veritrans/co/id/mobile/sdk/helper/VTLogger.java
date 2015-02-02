@@ -2,12 +2,10 @@ package veritrans.co.id.mobile.sdk.helper;
 
 import android.util.Log;
 
-import id.co.veritrans.android.api.VTDirect;
-
 /**
  * Created by muhammadanis on 1/29/15.
  */
-public class Logger {
+public class VTLogger {
     public enum LogLevel{
         VERBOSE,
         INFO,
@@ -16,7 +14,7 @@ public class Logger {
     }
 
     String className;
-    public Logger(Class c){
+    public VTLogger(Class c){
         className = c.getName();
     }
 
@@ -24,16 +22,16 @@ public class Logger {
         String allMessage = String.format("Class: %s, Message: %s",className,message);
         switch (logLevel){
             case VERBOSE:
-                Log.v(Constants.SDK_TAG,allMessage);
+                Log.v(VTConstants.SDK_TAG,allMessage);
                 break;
             case DEBUG:
-                Log.d(Constants.SDK_TAG,allMessage);
+                Log.d(VTConstants.SDK_TAG,allMessage);
                 break;
             case ERROR:
-                Log.e(Constants.SDK_TAG,allMessage);
+                Log.e(VTConstants.SDK_TAG,allMessage);
                 break;
             case INFO:
-                Log.i(Constants.SDK_TAG,allMessage);
+                Log.i(VTConstants.SDK_TAG,allMessage);
                 break;
             default:
                 break;

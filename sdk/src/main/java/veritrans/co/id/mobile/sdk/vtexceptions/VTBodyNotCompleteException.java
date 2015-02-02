@@ -1,6 +1,6 @@
 package veritrans.co.id.mobile.sdk.vtexceptions;
 
-import veritrans.co.id.mobile.sdk.helper.Strings;
+import veritrans.co.id.mobile.sdk.helper.VTStrings;
 
 /**
  * Created by muhammadanis on 2/2/15.
@@ -8,10 +8,10 @@ import veritrans.co.id.mobile.sdk.helper.Strings;
 public class VTBodyNotCompleteException extends VTMobileException{
 
     public VTBodyNotCompleteException(Exception e){
-        super(Strings.BODY_EXCEPTION,e);
+        super(VTStrings.BODY_EXCEPTION,e);
     }
 
     public VTBodyNotCompleteException(){
-        super(Strings.BODY_EXCEPTION);
+        super(VTStrings.BODY_EXCEPTION);
     }
 }
