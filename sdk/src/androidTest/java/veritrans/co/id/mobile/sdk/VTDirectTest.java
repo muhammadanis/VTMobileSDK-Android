@@ -90,12 +90,12 @@ public class VTDirectTest extends InstrumentationTestCase {
     public void testCharging() throws InterruptedException {
         final CountDownLatch signal = new CountDownLatch(1);
         VTCardDetails cardDetails = CardFactory(false);
-        
-        logger.Log("Start test charging vt direct", LogLevel.DEBUG);
-        vtDirect.getToken(new ITokenCallback() {
-            @Override
-            public void onSuccess(VTToken vtToken) {
+        VTTokenRequest request = new VTTokenRequest();
+        request.setCardDetails(cardDetails);
 
+        VTMobile.getToken(new IActionCallback<VTTokenResponse, VTMobileException>() {
+            @Override
+            public void onSuccess(VTTokenResponse data) {
                 logger.Log("Success to get token", LogLevel.DEBUG);
                 //create product
                 VTProduct vtProduct = new VTProduct();
@@ -105,7 +105,7 @@ public class VTDirectTest extends InstrumentationTestCase {
 
                 //create tokendata
                 VTTokenData tokenData = new VTTokenData();
-                tokenData.setTokenId(vtToken.getToken_id());
+                tokenData.setTokenId(data.getToken_id());
 
                 //create charge request
                 VTChargeRequest chargeRequest = new VTChargeRequest();
@@ -138,17 +138,18 @@ public class VTDirectTest extends InstrumentationTestCase {
                         signal.countDown();
                     }
                 }, chargeRequest);
+
             }
 
             @Override
-            public void onError(Exception e) {
+            public void onError(VTMobileException error) {
                 logger.Log("Failed to get token", LogLevel.ERROR);
                 assertFalse(true);
+
             }
-        });
+        }, request);
 
         signal.await();
-
 
     }
 
