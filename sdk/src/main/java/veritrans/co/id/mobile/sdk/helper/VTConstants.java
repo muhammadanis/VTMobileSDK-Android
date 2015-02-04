@@ -8,16 +8,34 @@ import veritrans.co.id.mobile.sdk.BuildConfig;
 public class VTConstants {
     public static String SDK_TAG = "vt-mobile-sdk";
 
-    public static boolean isDebug = true;
-
     public static String Port = "8080";
-
     public static String Version = "/v1";
 
-    public static String Endpoint = BuildConfig.DEBUG ? "http://10.255.255.25:" + Port + Version   : "http://10.255.255.1:" + Port + Version;
+    private static String Endpoint = "http://10.255.255.25:";
+    private static String SandboxEndpoint = "http://10.255.255.25:";
+
+    private static String TokenEndpoint = "https://api.veritrans.co.id/v2/token";
+    private static String SandboxTokenEndpoint = "https://api.sandbox.veritrans.co.id/v2/token";
 
 
 
-    public static  String GetProductsEndpoint = Endpoint + "/merchant/product";
-    public static String ChargeEndpoint = Endpoint + "/charge";
+    private static String getEndpoint(){
+        return VTMobileConfig.IsProduction ?  Endpoint + Port + Version   : SandboxEndpoint + Port + Version;
+    }
+
+    public static String GetProductsEndpoint(){
+        return getEndpoint() + "/merchant/product";
+    }
+
+    public static String ChargeEndpoint(){
+        return getEndpoint() + "/charge";
+    }
+
+    public static String ConfirmTransactionEndpoint() {
+        return getEndpoint() + "/merchant/payment/confirm";
+    }
+
+    public static String getTokenEndPoint() {
+        return VTMobileConfig.IsProduction ? TokenEndpoint : SandboxTokenEndpoint;
+    }
 }

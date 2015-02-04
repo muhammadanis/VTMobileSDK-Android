@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import id.co.veritrans.android.api.VTModel.VTCardDetails;
 import veritrans.co.id.mobile.sdk.entity.VTProduct;
 import veritrans.co.id.mobile.sdk.entity.VTTokenData;
 

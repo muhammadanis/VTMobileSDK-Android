@@ -24,8 +24,12 @@ import veritrans.co.id.mobile.sdk.helper.VTLogger;
 import veritrans.co.id.mobile.sdk.interfaces.IActionCallback;
 import veritrans.co.id.mobile.sdk.request.VTBaseRequest;
 import veritrans.co.id.mobile.sdk.request.VTChargeRequest;
+import veritrans.co.id.mobile.sdk.request.VTConfirmTransactionRequest;
+import veritrans.co.id.mobile.sdk.request.VTTokenRequest;
 import veritrans.co.id.mobile.sdk.response.VTChargeResponse;
+import veritrans.co.id.mobile.sdk.response.VTConfirmTransactionResponse;
 import veritrans.co.id.mobile.sdk.response.VTGetProductResponse;
+import veritrans.co.id.mobile.sdk.response.VTTokenResponse;
 import veritrans.co.id.mobile.sdk.vtexceptions.VTBodyNotCompleteException;
 import veritrans.co.id.mobile.sdk.vtexceptions.VTConnectionException;
 import veritrans.co.id.mobile.sdk.vtexceptions.VTMobileException;
@@ -47,7 +51,7 @@ public class VTMobile {
         httpContainer.setHttpMethod(VTHttpContainer.VTHttpMethod.POST);
         String payload = new Gson().toJson(new VTBaseRequest());
         httpContainer.setPayload(payload);
-        new VTMobile().new CallAPIAsync<>(callback, httpContainer,VTGetProductResponse.class).execute(VTConstants.GetProductsEndpoint);
+        new VTMobile().new CallAPIAsync<>(callback, httpContainer,VTGetProductResponse.class).execute(VTConstants.GetProductsEndpoint());
     }
 
     public static void charge(IActionCallback<VTChargeResponse,VTMobileException> callback, VTChargeRequest request){
@@ -55,10 +59,24 @@ public class VTMobile {
         httpContainer.setHttpMethod(VTHttpContainer.VTHttpMethod.POST);
         String payload = new Gson().toJson(request);
         httpContainer.setPayload(payload);
-        new VTMobile().new CallAPIAsync<>(callback,httpContainer,VTChargeResponse.class).execute(VTConstants.ChargeEndpoint);
+        new VTMobile().new CallAPIAsync<>(callback,httpContainer,VTChargeResponse.class).execute(VTConstants.ChargeEndpoint());
     }
 
-    class CallAPIAsync<T> extends  AsyncTask<String,Void,Object>{
+    public static void confirmTransaction(IActionCallback<VTConfirmTransactionResponse,VTMobileException> callback, VTConfirmTransactionRequest request){
+        VTHttpContainer httpContainer = new VTHttpContainer();
+        httpContainer.setHttpMethod(VTHttpContainer.VTHttpMethod.POST);
+        String payload = new Gson().toJson(request);
+        httpContainer.setPayload(payload);
+        new VTMobile().new CallAPIAsync<>(callback,httpContainer,VTConfirmTransactionResponse.class).execute(VTConstants.ConfirmTransactionEndpoint());
+    }
+
+    public static void getToken(IActionCallback<VTTokenResponse,VTMobileException> callback, VTTokenRequest request){
+        VTHttpContainer httpContainer = new VTHttpContainer();
+        httpContainer.setHttpMethod(VTHttpContainer.VTHttpMethod.GET);
+        new VTMobile().new CallAPIAsync<>(callback,httpContainer,VTTokenResponse.class).execute(request.getTokenUrl());
+    }
+
+    private class CallAPIAsync<T> extends  AsyncTask<String,Void,Object>{
 
         IActionCallback<T,VTMobileException> callback;
         VTHttpContainer httpContainer;

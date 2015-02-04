@@ -1,8 +1,7 @@
 package veritrans.co.id.mobile.sdk.request;
 
 import com.google.gson.annotations.SerializedName;
-
-import id.co.veritrans.android.api.VTUtil.VTConfig;
+import veritrans.co.id.mobile.sdk.helper.VTMobileConfig;
 
 /**
  * Created by muhammadanis on 2/2/15.
@@ -13,7 +12,7 @@ public class VTBaseRequest {
     protected String clientKey;
 
     public VTBaseRequest(){
-        clientKey = VTConfig.CLIENT_KEY;
+        clientKey = VTMobileConfig.ClientKey;
     }
 
     public String getClientKey() {

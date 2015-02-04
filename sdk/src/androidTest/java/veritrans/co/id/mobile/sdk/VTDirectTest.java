@@ -7,20 +7,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import id.co.veritrans.android.api.VTDirect;
-import id.co.veritrans.android.api.VTInterface.ITokenCallback;
-import id.co.veritrans.android.api.VTModel.VTCardDetails;
-import id.co.veritrans.android.api.VTModel.VTToken;
-import id.co.veritrans.android.api.VTUtil.VTConfig;
+import veritrans.co.id.mobile.sdk.entity.VTCardDetails;
 import veritrans.co.id.mobile.sdk.entity.VTProduct;
 import veritrans.co.id.mobile.sdk.entity.VTTokenData;
 import veritrans.co.id.mobile.sdk.helper.VTConstants;
 import veritrans.co.id.mobile.sdk.helper.VTLogger;
+import veritrans.co.id.mobile.sdk.helper.VTMobileConfig;
 import veritrans.co.id.mobile.sdk.interfaces.IActionCallback;
 import veritrans.co.id.mobile.sdk.request.VTChargeRequest;
+import veritrans.co.id.mobile.sdk.request.VTConfirmTransactionRequest;
+import veritrans.co.id.mobile.sdk.request.VTTokenRequest;
 import veritrans.co.id.mobile.sdk.response.VTChargeResponse;
+import veritrans.co.id.mobile.sdk.response.VTConfirmTransactionResponse;
 import veritrans.co.id.mobile.sdk.response.VTGetProductResponse;
+import veritrans.co.id.mobile.sdk.response.VTTokenResponse;
 import veritrans.co.id.mobile.sdk.vtexceptions.VTMobileException;
+
+import static veritrans.co.id.mobile.sdk.helper.VTLogger.LogLevel;
 
 /**
  * Created by muhammadanis on 1/28/15.
@@ -33,8 +36,8 @@ public class VTDirectTest extends InstrumentationTestCase {
     @Override
     protected void setUp() throws Exception {
 
-        VTConfig.VT_IsProduction = false;
-        VTConfig.CLIENT_KEY = "VT-client-SimkwEjR3_fKj73D";
+        VTMobileConfig.IsProduction = false;
+        VTMobileConfig.ClientKey = "VT-client-SimkwEjR3_fKj73D";
     }
 
     public void testGetProductList(){
@@ -42,35 +45,58 @@ public class VTDirectTest extends InstrumentationTestCase {
         VTMobile.getAllProducts(new IActionCallback<VTGetProductResponse, VTMobileException>() {
             @Override
             public void onSuccess(VTGetProductResponse data) {
-                logger.Log(String.format("Endpoint: %s", VTConstants.Endpoint), VTLogger.LogLevel.DEBUG);
-                logger.Log("Success get AllProducts", VTLogger.LogLevel.DEBUG);
                 assertNotNull(data);
                 for(VTProduct product : data.getProducts()){
-                    logger.Log(product.toString(), VTLogger.LogLevel.DEBUG);
+                    logger.Log(product.toString(), LogLevel.DEBUG);
                 }
             }
 
             @Override
             public void onError(VTMobileException error) {
-                logger.Log("OnError", VTLogger.LogLevel.INFO);
-                logger.Log(error.getRawMessage(), VTLogger.LogLevel.ERROR);
+                logger.Log("OnError", LogLevel.INFO);
+                logger.Log(error.getRawMessage(), LogLevel.ERROR);
                 assertFalse(true);
             }
         });
     }
 
+    public void testGetToken() throws InterruptedException {
+        final CountDownLatch signal = new CountDownLatch(1);
+        VTCardDetails cardDetails = CardFactory(false);
+        VTTokenRequest request = new VTTokenRequest();
+        request.setCardDetails(cardDetails);
+
+        logger.Log("Start get token", LogLevel.DEBUG);
+
+        VTMobile.getToken(new IActionCallback<VTTokenResponse, VTMobileException>() {
+            @Override
+            public void onSuccess(VTTokenResponse data) {
+                assertNotNull(data);
+                assertNotNull(data.getToken_id());
+                logger.Log("Token Id: "+data.getToken_id(),LogLevel.DEBUG);
+                signal.countDown();
+            }
+
+            @Override
+            public void onError(VTMobileException error) {
+                error.printStackTrace();
+                assertFalse(true);
+                signal.countDown();
+            }
+        },request);
+        signal.await();
+    }
+
     public void testCharging() throws InterruptedException {
         final CountDownLatch signal = new CountDownLatch(1);
         VTCardDetails cardDetails = CardFactory(false);
-        VTDirect vtDirect = new VTDirect();
-        vtDirect.setCard_details(cardDetails);
-
-        logger.Log("Start test charging vt direct", VTLogger.LogLevel.DEBUG);
+        
+        logger.Log("Start test charging vt direct", LogLevel.DEBUG);
         vtDirect.getToken(new ITokenCallback() {
             @Override
             public void onSuccess(VTToken vtToken) {
 
-                logger.Log("Success to get token", VTLogger.LogLevel.DEBUG);
+                logger.Log("Success to get token", LogLevel.DEBUG);
                 //create product
                 VTProduct vtProduct = new VTProduct();
                 vtProduct.setId("23aa44");
@@ -93,21 +119,21 @@ public class VTDirectTest extends InstrumentationTestCase {
                 chargeRequest.setPaymentType("credit_card");
                 chargeRequest.setTokenData(tokenData);
 
-                logger.Log("Start call charging", VTLogger.LogLevel.INFO);
+                logger.Log("Start call charging", LogLevel.INFO);
                 VTMobile.charge(new IActionCallback<VTChargeResponse,VTMobileException>(){
 
                     @Override
                     public void onSuccess(VTChargeResponse data) {
                         Log.d(VTConstants.SDK_TAG,"success charging");
-                        logger.Log("Success charge " + data.toString(), VTLogger.LogLevel.DEBUG);
-                        logger.Log("Trx id: "+data.getTransaction_id(), VTLogger.LogLevel.DEBUG);
+                        logger.Log("Success charge " + data.toString(), LogLevel.DEBUG);
+                        logger.Log("Trx id: "+data.getTransaction_id(), LogLevel.DEBUG);
                         assertNotNull(data);
                         signal.countDown();
                     }
 
                     @Override
                     public void onError(VTMobileException error) {
-                        logger.Log("Failed to Charge " + error.getRawMessage(), VTLogger.LogLevel.ERROR);
+                        logger.Log("Failed to Charge " + error.getRawMessage(), LogLevel.ERROR);
                         assertFalse(true);
                         signal.countDown();
                     }
@@ -116,7 +142,7 @@ public class VTDirectTest extends InstrumentationTestCase {
 
             @Override
             public void onError(Exception e) {
-                logger.Log("Failed to get token", VTLogger.LogLevel.ERROR);
+                logger.Log("Failed to get token", LogLevel.ERROR);
                 assertFalse(true);
             }
         });
@@ -124,6 +150,29 @@ public class VTDirectTest extends InstrumentationTestCase {
         signal.await();
 
 
+    }
+
+    public void testConfirmTransaction() throws InterruptedException {
+        final CountDownLatch signal = new CountDownLatch(1);
+        VTConfirmTransactionRequest request = new VTConfirmTransactionRequest();
+        request.setTransactionId("6f09c95d-75ff-4ecd-956c-c29095603bdd");
+        VTMobile.confirmTransaction(new IActionCallback<VTConfirmTransactionResponse, VTMobileException>() {
+            @Override
+            public void onSuccess(VTConfirmTransactionResponse data) {
+                assertNotNull(data);
+                logger.Log("IsSuccess: "+ Boolean.toString(data.isSuccess()), LogLevel.DEBUG);
+                signal.countDown();
+            }
+
+            @Override
+            public void onError(VTMobileException error) {
+                assertFalse(true);
+                logger.Log("failed with error: "+error.getRawMessage(), LogLevel.ERROR);
+                signal.countDown();
+            }
+        }, request);
+
+        signal.await();
     }
 
     public static VTCardDetails CardFactory(boolean secure){
